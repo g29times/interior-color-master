@@ -2,8 +2,12 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <!-- WDXL Lubrifont 字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Bungee+Spice&family=Bungee+Tint&family=WDXL+Lubrifont+SC&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 智能室内配色分析器</title>
+    <title>AI 室内色彩分析大师</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom animations */
@@ -14,6 +18,21 @@
         
         .animate-fade-in {
             animation: fade-in-up 0.5s ease-out forwards;
+        }
+
+        /* Loading color cycle animation - 红黄蓝绿轮播 */
+        @keyframes color-cycle {
+            0%, 100% { color: #ef4444; opacity: 1; }      /* 红 */
+            12.5% { color: #ef4444; opacity: 0.5; }
+            25% { color: #eab308; opacity: 1; }          /* 黄 */
+            37.5% { color: #eab308; opacity: 0.5; }
+            50% { color: #3b82f6; opacity: 1; }          /* 蓝 */
+            62.5% { color: #3b82f6; opacity: 0.5; }
+            75% { color: #22c55e; opacity: 1; }          /* 绿 */
+            87.5% { color: #22c55e; opacity: 0.5; }
+        }
+        .animate-color-pulse {
+            animation: color-cycle 2s ease-in-out infinite;
         }
 
         .color-dot {
@@ -131,8 +150,8 @@
 
     <!-- Header -->
     <header class="text-center mb-8 max-w-2xl animate-fade-in">
-        <h1 class="text-3xl md:text-4xl font-bold mb-3 text-gray-800">AI 室内色彩分析师</h1>
-        <p class="text-gray-500">上传家居照片，AI 将自动提取色盘、定位物品并解读空间氛围。</p>
+        <h1 class="text-3xl md:text-4xl font-bold mb-3 text-gray-800" style="font-family: 'Bungee Spice', sans-serif;">Interior Color Master</h1>
+        <p class="text-gray-500" style="font-family: 'Ma Shan Zheng', sans-serif;">室内色彩分析大师 - 上传家居照片，自动提取色盘、定位物品并解读空间氛围。</p>
     </header>
 
     <!-- Input Section -->
@@ -174,7 +193,7 @@
 
         <div id="loading-indicator" class="hidden flex-col items-center mb-8">
             <div class="loader mb-3"></div>
-            <p class="text-indigo-600 font-medium text-sm animate-pulse">正在识别物体、提取颜色...</p>
+            <p class="font-medium text-sm animate-color-pulse" style="font-family: 'Ma Shan Zheng', sans-serif;">正在识别物体、提取颜色...</p>
         </div>
 
         <!-- Layout: Image Left, Palette & Info Right (Desktop) -->
@@ -206,13 +225,13 @@
                 <div id="decor-panel" class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100 opacity-50 pointer-events-none transition-all">
                     <h3 class="text-sm font-bold text-indigo-400 uppercase tracking-wider mb-2">搭配建议</h3>
                     <p id="decor-text" class="text-indigo-900 text-sm font-medium">点击上方色点查看详情</p>
-                    <p id="decor-desc" class="text-indigo-700 text-xs mt-1">选定颜色后，查看 AI 对该颜色在空间中运用的点评。</p>
+                    <p id="decor-desc" class="text-indigo-700 text-xs mt-1" style="font-family: 'Ma Shan Zheng', sans-serif; font-size: 1rem;">选定颜色后，查看 AI 对该颜色在空间中运用的点评。</p>
                 </div>
 
                 <!-- AI Vibe Description -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex-grow">
                     <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">✨ 空间氛围解读</h3>
-                    <div id="vibe-content" class="text-gray-600 text-sm leading-relaxed prose">
+                    <div id="vibe-content" class="text-gray-600 text-sm leading-relaxed prose" style="font-family: 'Ma Shan Zheng', sans-serif; font-size: 1.5rem;">
                         <p class="italic text-gray-400">AI 分析完成后，这里将显示对房间风格、光线和情感氛围的专业解读。</p>
                     </div>
                 </div>
