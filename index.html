@@ -130,6 +130,142 @@
         .modal-bg {
             background-color: rgba(0, 0, 0, 0.5);
         }
+        
+        /* Ref Image Thumbnail */
+        .ref-thumb {
+            width: 4rem;
+            height: 4rem;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .ref-thumb-wrapper {
+            position: relative;
+        }
+        .ref-thumb-remove {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Chat Styles */
+        .chat-bubble-user {
+            background-color: #4f46e5;
+            color: white;
+            border-radius: 12px 12px 0 12px;
+            padding: 8px 12px;
+            max-width: 85%;
+            margin-left: auto;
+            font-size: 0.85rem;
+        }
+        .chat-bubble-ai {
+            background-color: #f3f4f6;
+            color: #374151;
+            border-radius: 12px 12px 12px 0;
+            padding: 8px 12px;
+            max-width: 85%;
+            margin-right: auto;
+            font-size: 0.85rem;
+        }
+        .chat-container {
+            scrollbar-width: thin;
+            scrollbar-color: #e5e7eb transparent;
+        }
+
+        /* Image Comparison Slider */
+        .comparison-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            user-select: none;
+            touch-action: none;
+        }
+        .comparison-container img {
+            display: block;
+            width: 100%;
+            height: auto;
+            pointer-events: none;
+        }
+        .comparison-before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .comparison-before img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: var(--container-width, 800px);
+            height: 100%;
+            max-width: none;
+            object-fit: cover;
+        }
+        .comparison-slider {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: white;
+            cursor: ew-resize;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        .comparison-slider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 44px;
+            height: 44px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .comparison-slider::after {
+            content: '❮ ❯';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            color: #666;
+            letter-spacing: 4px;
+            font-weight: bold;
+        }
+        .comparison-label {
+            position: absolute;
+            top: 12px;
+            padding: 4px 12px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+        .comparison-label.before { left: 12px; }
+        .comparison-label.after { right: 12px; }
 
         body {
             background-color: #f8f9fa;
@@ -155,31 +291,90 @@
     </header>
 
     <!-- Input Section -->
-    <div class="w-full max-w-xl bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 animate-fade-in" style="animation-delay: 0.1s;">
-        <div class="flex flex-col gap-4">
-            <!-- URL Input -->
-            <div class="flex gap-2">
-                <input type="text" id="image-url" placeholder="粘贴图片 URL (例如: https://example.com/room.jpg)" 
-                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm">
-                <button id="url-btn" onclick="loadImageFromUrl()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors text-sm whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
-                    加载 URL
+    <div class="w-full max-w-5xl bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 animate-fade-in" style="animation-delay: 0.1s;">
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- upload image Section 图片上传 -->
+            <div class="w-full md:w-1/3 flex flex-col gap-4">
+                <!-- URL Input -->
+                <div class="flex gap-2">
+                    <input type="text" id="image-url" placeholder="粘贴图片 URL (例如: https://example.com/room.jpg)" 
+                           class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm">
+                    <button id="url-btn" onclick="loadImageFromUrl()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors text-sm whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
+                        加载 URL
+                    </button>
+                </div>
+                
+                <div class="relative flex py-1 items-center">
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span class="flex-shrink-0 mx-4 text-gray-400 text-xs">或者</span>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <!-- File Upload -->
+                <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors group">
+                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                        <p class="text-sm text-gray-500 group-hover:text-indigo-600 font-medium">点击上传本地图片</p>
+                        <p class="text-xs text-gray-400">支持 JPG, PNG (Max 5MB)</p>
+                    </div>
+                    <input id="image-upload" type="file" class="hidden" accept="image/*" onchange="handleFileUpload(this)" />
+                </label>
+            </div>
+            
+            <!-- NEW: Remix Section (Image Generation) -->
+            <div class="w-full md:w-1/3 bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-2xl border border-purple-100 shadow-sm mt-4 md:mt-0">
+                <h3 class="text-sm font-bold text-purple-600 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    🎨 AI 创意重绘 (Remix)
+                    <span class="px-2 py-0.5 text-[10px] bg-purple-200 text-purple-700 rounded-full">Beta</span>
+                </h3>
+                <p class="text-xs text-gray-500 mb-3">想要改变房间风格？输入描述，AI 将基于当前房间结构生成新设计。</p>
+                
+                <textarea id="remix-prompt" rows="2" placeholder="例如：改为日式原木风格，添加绿植，阳光明媚..." 
+                    class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none text-sm resize-none mb-3 bg-white"></textarea>
+                
+                <!-- Reference Images Upload -->
+                <div class="mb-3">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs text-purple-700 font-bold">参考图片 (可选):</label>
+                        <span class="text-[10px] text-gray-400" id="ref-count">0/10</span>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2" id="ref-image-list">
+                        <!-- Add Button -->
+                        <label class="w-16 h-16 border-2 border-dashed border-purple-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-purple-100 text-purple-400 transition-colors flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            <input type="file" multiple accept="image/*" class="hidden" onchange="handleRefUpload(this)">
+                        </label>
+                        <!-- Thumbnails will be injected here -->
+                    </div>
+                </div>
+
+                <button id="remix-btn" onclick="generateRemix()" class="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors text-sm flex items-center justify-center gap-2">
+                    <span>🚀 生成新设计</span>
                 </button>
             </div>
             
-            <div class="relative flex py-1 items-center">
-                <div class="flex-grow border-t border-gray-200"></div>
-                <span class="flex-shrink-0 mx-4 text-gray-400 text-xs">或者</span>
-                <div class="flex-grow border-t border-gray-200"></div>
+            <!-- NEW: Chat Section -->
+            <div class="w-full md:w-1/3 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mt-6 md:mt-0">
+                <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    💬 智能软装顾问
+                </h3>
+                <div id="chat-history" class="chat-container h-48 overflow-y-auto mb-3 bg-gray-50 rounded-xl p-3 flex flex-col gap-3">
+                    <div class="chat-bubble-ai">你好！我是您的专属 AI 设计师。您想了解什么？</div>
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="chat-input" placeholder="例如：这种风格适合什么样的窗帘？" 
+                            class="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
+                            onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()" id="chat-send-btn" class="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
-            <!-- File Upload -->
-            <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors group">
-                <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                    <p class="text-sm text-gray-500 group-hover:text-indigo-600 font-medium">点击上传本地图片</p>
-                    <p class="text-xs text-gray-400">支持 JPG, PNG (Max 5MB)</p>
-                </div>
-                <input id="image-upload" type="file" class="hidden" accept="image/*" onchange="handleFileUpload(this)" />
-            </label>
         </div>
     </div>
 
@@ -235,7 +430,7 @@
                         <p class="italic text-gray-400">AI 分析完成后，这里将显示对房间风格、光线和情感氛围的专业解读。</p>
                     </div>
                 </div>
-
+                
             </div>
         </div>
     </div>
@@ -269,6 +464,61 @@
         </div>
     </div>
 
+    <!-- Generated Image Modal -->
+    <div id="result-modal" class="fixed inset-0 modal-bg z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden relative animate-fade-in">
+            <!-- Header -->
+            <div class="flex justify-between items-center p-4 border-b border-gray-100 bg-gray-50">
+                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <span>✨ AI 重绘结果</span>
+                </h3>
+                <button onclick="closeResultModal()" class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-200 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Content -->
+            <div class="flex-1 overflow-auto p-6 bg-gray-100 flex items-center justify-center relative min-h-[250px]">
+                <div id="remix-loader" class="hidden absolute flex-col items-center">
+                    <div class="loader mb-4 border-purple-200 border-t-purple-600 w-12 h-12"></div>
+                    <p class="text-purple-600 font-medium animate-pulse">正在绘制新方案...</p>
+                </div>
+                <img id="generated-image" src="" class="max-w-full max-h-[70vh] rounded-lg shadow-lg object-contain hidden">
+                
+                <!-- Comparison Slider -->
+                <div id="comparison-wrapper" class="comparison-container hidden">
+                    <!-- After (AI Generated) - Full width background -->
+                    <img id="comparison-after" src="" alt="AI 生成">
+                    
+                    <!-- Before (Original) - Clipped overlay -->
+                    <div class="comparison-before" id="comparison-before-wrapper">
+                        <img id="comparison-before" src="" alt="原图">
+                    </div>
+                    
+                    <!-- Slider Handle -->
+                    <div class="comparison-slider" id="comparison-slider"></div>
+                    
+                    <!-- Labels -->
+                    <span class="comparison-label before">之前</span>
+                    <span class="comparison-label after">🌟 AI 生成</span>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-4 border-t border-gray-100 bg-white flex justify-between items-center">
+                <p class="text-xs text-gray-400 truncate max-w-[60%]" id="result-prompt"></p>
+                <a id="download-link" href="#" download="remix_design.png" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    保存图片
+                </a>
+            </div>
+        </div>
+    </div>
+
     <script>
         const apiKey = ""; // System injected, DO NOT CHANGE
         
@@ -277,6 +527,10 @@
         let currentImageDataUrl = null; // With prefix for IMG tag
         let analysisData = null;
         let activeColorIndex = null;
+
+        // New State for Reference Images
+        let referenceImages = []; // Array of objects { id, base64, mimeType }
+        const MAX_REF_IMAGES = 10;
 
         // --- Settings / API Key Logic ---
 
@@ -373,6 +627,72 @@
             resetActiveState();
             
             setTimeout(() => document.getElementById('main-content').scrollIntoView({ behavior: 'smooth' }), 100);
+        }
+        
+        // --- Reference Images Logic ---
+
+        function handleRefUpload(input) {
+            const files = Array.from(input.files);
+            if (!files.length) return;
+
+            if (referenceImages.length + files.length > MAX_REF_IMAGES) {
+                showError(`最多只能上传 ${MAX_REF_IMAGES} 张参考图`);
+                return;
+            }
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const dataUrl = e.target.result;
+                    const base64 = dataUrl.split(',')[1];
+                    const mimeType = dataUrl.match(/data:([^;]+);base64,/)?.[1] || 'image/jpeg';
+                    
+                    referenceImages.push({
+                        id: Date.now() + Math.random(),
+                        base64: base64,
+                        mimeType: mimeType,
+                        dataUrl: dataUrl
+                    });
+                    renderRefImages();
+                };
+                reader.readAsDataURL(file);
+            });
+            input.value = ''; // reset
+        }
+
+        function removeRefImage(id) {
+            referenceImages = referenceImages.filter(img => img.id !== id);
+            renderRefImages();
+        }
+
+        function renderRefImages() {
+            const container = document.getElementById('ref-image-list');
+            const countLabel = document.getElementById('ref-count');
+            
+            // Keep the "Add" button (first child)
+            const addButton = container.firstElementChild;
+            container.innerHTML = '';
+            container.appendChild(addButton);
+
+            referenceImages.forEach(img => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'ref-thumb-wrapper animate-fade-in';
+                
+                const thumb = document.createElement('img');
+                thumb.src = img.dataUrl;
+                thumb.className = 'ref-thumb';
+                
+                const removeBtn = document.createElement('div');
+                removeBtn.className = 'ref-thumb-remove';
+                removeBtn.innerHTML = '×';
+                removeBtn.onclick = () => removeRefImage(img.id);
+                
+                wrapper.appendChild(thumb);
+                wrapper.appendChild(removeBtn);
+                container.appendChild(wrapper);
+            });
+
+            countLabel.innerText = `${referenceImages.length}/${MAX_REF_IMAGES}`;
         }
 
         // --- Interaction ---
@@ -609,6 +929,228 @@
             btn.classList.add('bg-white', 'text-indigo-600', 'border', 'border-indigo-200');
         }
 
+        // --- Gemini AI : Chat ---
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+            if (!currentImageBase64) return showError("请先加载分析图片");
+
+            const effectiveKey = getEffectiveApiKey();
+            if (!effectiveKey) {
+                toggleSettings();
+                return showError("请先设置 API Key", true);
+            }
+
+            // Append User Message
+            const historyDiv = document.getElementById('chat-history');
+            const userBubble = document.createElement('div');
+            userBubble.className = 'chat-bubble-user';
+            userBubble.innerText = message;
+            historyDiv.appendChild(userBubble);
+            input.value = '';
+            historyDiv.scrollTop = historyDiv.scrollHeight;
+
+            // Loading bubble
+            const loadingBubble = document.createElement('div');
+            loadingBubble.className = 'chat-bubble-ai';
+            loadingBubble.innerText = '思考中...';
+            loadingBubble.id = 'chat-loading';
+            historyDiv.appendChild(loadingBubble);
+            historyDiv.scrollTop = historyDiv.scrollHeight;
+
+            const mimeType = currentImageDataUrl.match(/data:([^;]+);base64,/)?.[1] || 'image/jpeg';
+
+            try {
+                // Construct prompt with context
+                let contextPrompt = `
+                You are an expert interior designer helpful assistant. 
+                You are currently analyzing an image of a room.
+                Current Analysis Vibe: "${analysisData ? analysisData.vibe_description : 'Not yet analyzed'}"
+                
+                The user asks: "${message}"
+                
+                Answer the user's question professionally in Chinese. 
+                Refer to specific visual elements in the image if relevant.
+                Keep it concise (under 100 words).
+                `;
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${effectiveKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: contextPrompt },
+                                { inline_data: { mime_type: mimeType, data: currentImageBase64 } }
+                            ]
+                        }]
+                    })
+                });
+
+                if (!response.ok) handleApiError(response);
+
+                const data = await response.json();
+                const reply = data.candidates[0].content.parts[0].text;
+                
+                // Replace loading bubble
+                const aiBubble = document.createElement('div');
+                aiBubble.className = 'chat-bubble-ai';
+                aiBubble.innerText = reply;
+                
+                historyDiv.removeChild(loadingBubble);
+                historyDiv.appendChild(aiBubble);
+                historyDiv.scrollTop = historyDiv.scrollHeight;
+
+            } catch (err) {
+                console.error(err);
+                historyDiv.removeChild(loadingBubble);
+                const errorBubble = document.createElement('div');
+                errorBubble.className = 'chat-bubble-ai text-red-500';
+                errorBubble.innerText = "抱歉，回复出错了。";
+                historyDiv.appendChild(errorBubble);
+            }
+        }
+
+        // --- Gemini AI : Remix (Image Gen) ---
+
+        async function generateRemix() {
+            const promptInput = document.getElementById('remix-prompt');
+            const promptText = promptInput.value.trim();
+            if (!promptText) return showError("请输入您的设计想法");
+            if (!currentImageBase64) return showError("请先加载图片");
+
+            const effectiveKey = getEffectiveApiKey();
+            if (!effectiveKey) {
+                toggleSettings();
+                return showError("请先设置 API Key", true);
+            }
+
+            // Open Modal in Loading State
+            const modal = document.getElementById('result-modal');
+            const loader = document.getElementById('remix-loader');
+            const comparisonWrapper = document.getElementById('comparison-wrapper');
+            const btn = document.getElementById('remix-btn');
+            
+            modal.classList.remove('hidden');
+            loader.classList.remove('hidden');
+            loader.classList.add('flex');
+            comparisonWrapper.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerText = "正在生成...";
+
+            document.getElementById('result-prompt').innerText = `"${promptText}"`;
+
+            const mimeType = currentImageDataUrl.match(/data:([^;]+);base64,/)?.[1] || 'image/jpeg';
+            const parts = [];
+            
+            // 1. Text Prompt
+            // Improve instruction for better adherence to reference images
+            let enhancedPrompt = `Redesign the first image based on this instruction: "${promptText}". `;
+            if (referenceImages.length > 0) {
+                enhancedPrompt += `Use the subsequent ${referenceImages.length} images as style/mood references. High quality interior design, photorealistic.`;
+            } else {
+                enhancedPrompt += `High quality interior design, photorealistic.`;
+            }
+            parts.push({ text: enhancedPrompt });
+
+            // 2. Main Image (Structure Reference)
+            parts.push({ inline_data: { mime_type: mimeType, data: currentImageBase64 } });
+
+            // 3. Reference Images (Style References)
+            referenceImages.forEach(ref => {
+                parts.push({ inline_data: { mime_type: ref.mimeType, data: ref.base64 } });
+            });
+            try {
+                // Image Editing/Image-to-Image Call
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${effectiveKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: parts
+                        }],
+                        generationConfig: {
+                            responseModalities: ['TEXT', 'IMAGE'] // Allows model to return image
+                        }
+                    })
+                });
+
+                if (!response.ok) handleApiError(response);
+
+                const data = await response.json();
+                
+                // Extract Image from response
+                // The structure for image response is usually in inlineData of a part
+                const candidates = data.candidates;
+                let generatedBase64 = null;
+                
+                if (candidates && candidates.length > 0) {
+                    const parts = candidates[0].content.parts;
+                    // Find the part with inlineData (the image)
+                    const imagePart = parts.find(p => p.inlineData);
+                    if (imagePart) {
+                        generatedBase64 = imagePart.inlineData.data;
+                    }
+                }
+
+                if (!generatedBase64) {
+                    throw new Error("No image generated. Please try a different prompt.");
+                }
+
+                // Show Comparison Slider
+                const generatedDataUrl = `data:image/png;base64,${generatedBase64}`;
+                
+                // Set images for comparison
+                document.getElementById('comparison-before').src = currentImageDataUrl;
+                document.getElementById('comparison-after').src = generatedDataUrl;
+                
+                // Reset slider to center
+                document.getElementById('comparison-before-wrapper').style.width = '50%';
+                document.getElementById('comparison-slider').style.left = '50%';
+                
+                comparisonWrapper.classList.remove('hidden');
+                
+                // Set container width CSS variable for before image
+                requestAnimationFrame(() => {
+                    const containerWidth = comparisonWrapper.offsetWidth;
+                    comparisonWrapper.style.setProperty('--container-width', containerWidth + 'px');
+                });
+                
+                // Set download link
+                const dwnLink = document.getElementById('download-link');
+                dwnLink.href = generatedDataUrl;
+
+            } catch (err) {
+                console.error(err);
+                if (err.message === "AUTH_ERROR") {
+                    showError("认证失败 (401)", true);
+                    closeResultModal();
+                } else {
+                    showError("生成失败: " + err.message);
+                    closeResultModal();
+                }
+            } finally {
+                loader.classList.add('hidden');
+                loader.classList.remove('flex');
+                btn.disabled = false;
+                btn.innerHTML = `<span>🚀 生成新设计</span>`;
+            }
+        }
+
+        function closeResultModal() {
+            document.getElementById('result-modal').classList.add('hidden');
+        }
+
+        async function handleApiError(response) {
+             if (response.status === 401 || response.status === 403) {
+                throw new Error("AUTH_ERROR");
+            }
+            const errorBody = await response.text();
+            throw new Error(`Status ${response.status}: ${errorBody}`);
+        }
+
         // --- Utils ---
 
         function showError(msg, showSettingsLink = false) {
@@ -644,6 +1186,61 @@
             }
             return `rgba(${r},${g},${b},${alpha})`;
         }
+
+        // --- Image Comparison Slider ---
+        (function initComparisonSlider() {
+            const container = document.getElementById('comparison-wrapper');
+            const slider = document.getElementById('comparison-slider');
+            const beforeWrapper = document.getElementById('comparison-before-wrapper');
+            
+            let isDragging = false;
+
+            function updateSliderPosition(clientX) {
+                const rect = container.getBoundingClientRect();
+                let x = clientX - rect.left;
+                x = Math.max(0, Math.min(x, rect.width));
+                const percent = (x / rect.width) * 100;
+                
+                slider.style.left = `${percent}%`;
+                beforeWrapper.style.width = `${percent}%`;
+            }
+
+            // Mouse events
+            slider.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                updateSliderPosition(e.clientX);
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            // Touch events for mobile
+            slider.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                e.preventDefault();
+            });
+
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                updateSliderPosition(e.touches[0].clientX);
+            });
+
+            document.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+
+            // Click anywhere on container to move slider
+            container.addEventListener('click', (e) => {
+                if (e.target === slider) return;
+                updateSliderPosition(e.clientX);
+            });
+        })();
     </script>
 </body>
 </html>
