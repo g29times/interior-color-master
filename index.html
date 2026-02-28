@@ -488,6 +488,18 @@
                     <input type="text" id="image-model-input" placeholder="例如：gemini-3-pro-image-preview"
                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm font-mono" />
                 </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="image-aspect-input" class="block text-xs text-gray-500 mb-1">生成比例</label>
+                        <input type="text" id="image-aspect-input" placeholder="1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm font-mono" />
+                    </div>
+                    <div>
+                        <label for="image-size-input" class="block text-xs text-gray-500 mb-1">清晰度/尺寸</label>
+                        <input type="text" id="image-size-input" placeholder="1K, 2K, 4K, 8K"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm font-mono" />
+                    </div>
+                </div>
             </div>
             
             <div class="flex justify-end gap-2">
@@ -556,7 +568,11 @@
         const apiKey = ""; // System injected, DO NOT CHANGE
         const defaultModels = {
             chat: "gemini-flash-lite-latest",
-            image: "gemini-3-pro-image-preview"
+            image: "gemini-3.1-flash-image-preview" // gemini-3-pro-image-preview
+        };
+        const defaultImageConfig = {
+            aspect: "16:9",
+            size: "1K"
         };
         
         // State
@@ -576,6 +592,8 @@
             const input = document.getElementById('custom-api-key');
             const chatInput = document.getElementById('chat-model-input');
             const imageInput = document.getElementById('image-model-input');
+            const imageAspectInput = document.getElementById('image-aspect-input');
+            const imageSizeInput = document.getElementById('image-size-input');
             
             if (modal.classList.contains('hidden')) {
                 modal.classList.remove('hidden');
@@ -583,6 +601,8 @@
                 input.value = localStorage.getItem('gemini_custom_key') || '';
                 chatInput.value = localStorage.getItem('gemini_chat_model') || defaultModels.chat;
                 imageInput.value = localStorage.getItem('gemini_image_model') || defaultModels.image;
+                imageAspectInput.value = localStorage.getItem('gemini_image_aspect') || defaultImageConfig.aspect;
+                imageSizeInput.value = localStorage.getItem('gemini_image_size') || defaultImageConfig.size;
             } else {
                 modal.classList.add('hidden');
             }
@@ -592,6 +612,8 @@
             const key = document.getElementById('custom-api-key').value.trim();
             const chatModel = document.getElementById('chat-model-input').value.trim();
             const imageModel = document.getElementById('image-model-input').value.trim();
+            const imageAspect = document.getElementById('image-aspect-input').value.trim();
+            const imageSize = document.getElementById('image-size-input').value.trim();
             if (key) {
                 localStorage.setItem('gemini_custom_key', key);
             } else {
@@ -611,6 +633,20 @@
                 localStorage.removeItem('gemini_image_model');
                 window.geminiImageModel = undefined;
             }
+            if (imageAspect) {
+                localStorage.setItem('gemini_image_aspect', imageAspect);
+                window.geminiImageAspect = imageAspect;
+            } else {
+                localStorage.removeItem('gemini_image_aspect');
+                window.geminiImageAspect = undefined;
+            }
+            if (imageSize) {
+                localStorage.setItem('gemini_image_size', imageSize);
+                window.geminiImageSize = imageSize;
+            } else {
+                localStorage.removeItem('gemini_image_size');
+                window.geminiImageSize = undefined;
+            }
             toggleSettings();
             showError("API Key 已保存", false); // Show success toast
         }
@@ -627,6 +663,14 @@
 
         function getImageModel() {
             return window.geminiImageModel || defaultModels.image;
+        }
+
+        function getImageAspect() {
+            return window.geminiImageAspect || localStorage.getItem('gemini_image_aspect') || defaultImageConfig.aspect;
+        }
+
+        function getImageSize() {
+            return window.geminiImageSize || localStorage.getItem('gemini_image_size') || defaultImageConfig.size;
         }
 
         function renderChatSuggestions(questions) {
@@ -1200,7 +1244,11 @@
                             parts: parts
                         }],
                         generationConfig: {
-                            responseModalities: ['TEXT', 'IMAGE'] // Allows model to return image
+                            responseModalities: ['TEXT', 'IMAGE'], // Allows model to return image
+                            imageConfig: {
+                                aspectRatio: getImageAspect(),
+                                imageSize: getImageSize()
+                            }
                         }
                     })
                 });
